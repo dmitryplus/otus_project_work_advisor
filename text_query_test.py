@@ -1,3 +1,6 @@
+# text_query_test.py
+# Проверка работы тестового запроса
+
 from src.rag_service import RAGService
 from src.llm_service import LLMService
 
