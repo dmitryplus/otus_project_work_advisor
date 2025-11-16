@@ -6,6 +6,8 @@ from langchain_community.llms import YandexGPT
 from langchain_core.prompts import PromptTemplate
 from langchain_core.runnables import RunnableSequence
 
+from src.prompt_service import PromptService
+
 # Загружаем переменные из .env файла
 env_path = Path(__file__).parent.parent / ".env"
 load_dotenv(dotenv_path=env_path)
@@ -16,7 +18,8 @@ class LLMService:
                  iam_token: str = None,
                  model: str = "yandexgpt",
                  temperature: float = 0.3,
-                 max_tokens: int = 500
+                 max_tokens: int = 500,
+                 prompt_template: PromptTemplate = None,
                  ):
 
         self.folder_id = folder_id or os.getenv("FOLDER_ID")
@@ -34,17 +37,12 @@ class LLMService:
             temperature=temperature,
             max_tokens=max_tokens
         )
-        self.prompt_template = PromptTemplate.from_template("""
-Ответь на вопрос, используя следующие документы:
 
-Контекст:
-{context}
-
-Вопрос:
-{question}
-
-Ответ:
-        """.strip())
+        if not prompt_template:
+            self.prompt_service = PromptService()
+            self.prompt_template = self.prompt_service.get_prompt_template()
+        else:
+            self.prompt_template = prompt_template
 
         # Цепочка: промпт → LLM
         self.chain: RunnableSequence = self.prompt_template | self.llm
