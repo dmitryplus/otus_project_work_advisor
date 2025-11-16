@@ -5,3 +5,6 @@
 ```shell
 docker run -d --rm --network=host --name otus-project-clickhouse --ulimit nofile=262144:262144 clickhouse
 ```
+
+Структура графа
+![graph_mermaid.png](graph_mermaid.png)

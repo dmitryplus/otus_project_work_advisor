@@ -149,3 +149,10 @@ class GraphService:
     def invoke(self, inputs: dict) -> dict:
         """Запуск графа с переданными входными данными."""
         return self.app.invoke(inputs)
+
+    def get_mermaid_code(self) -> str:
+        """Возвращает Mermaid-код для визуализации графа (можно вставить в VS Code или Mermaid Live Editor)."""
+        try:
+            return self.app.get_graph().draw_mermaid()
+        except Exception as e:
+            return f"Ошибка генерации Mermaid-диаграммы: {e}"

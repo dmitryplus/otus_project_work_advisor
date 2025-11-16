@@ -24,12 +24,16 @@ if __name__ == "__main__":
         "context": "",
         "response": "",
         #"image_data": "",
-             "image_data": f"data:image/png;base64,{encoded_image}",
+         "image_data": f"data:image/png;base64,{encoded_image}",
         "prompt_template": None,
     }
 
     print("🚀 Запуск обработки запроса с использованием langgraph...")
     graph_service = GraphService()
+
+    # print("\n📋 Mermaid-код для визуализации (скопируйте в Mermaid Live Editor):")
+    # print(graph_service.get_mermaid_code())
+
     result = graph_service.invoke(inputs)
 
     print("\n" + "=" * 50)
