@@ -56,3 +56,18 @@ class RAGService:
         documents_with_embeddings = self.prepare_documents(df)
         self.vector_store.add_documents(documents_with_embeddings)
         print(f"✅ Векторизация и сохранение завершены. Загружено {len(documents_with_embeddings)} чанков.")
+
+    def search_relevant_documents(self, query: str, top_k: int = 3) -> List[Dict[str, Any]]:
+        """
+        Ищет релевантные документы по запросу.
+        """
+        query_embedding = self.embedding_service.embed_query(query)
+        results = self.vector_store.search_similar(query_embedding, limit=top_k)
+        return results
+
+    def format_context(self, relevant_docs: List[Dict[str, Any]]) -> str:
+        """
+        Формирует строку контекста из списка релевантных документов.
+        """
+        return "\n\n".join([doc['text'] for doc in relevant_docs])
+

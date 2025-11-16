@@ -7,9 +7,6 @@ from pathlib import Path
 
 # Загружаем переменные из .env файла
 env_path = Path(__file__).parent.parent / ".env"
-
-print(env_path)
-
 load_dotenv(dotenv_path=env_path)
 
 
