@@ -1,1 +1,1 @@
-# otus_project_work_advisor
+# WorkAdvisor: интеллектуальный ассистент по выполненным работам
