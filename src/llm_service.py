@@ -1,3 +1,4 @@
+import json
 import os
 import time
 
@@ -12,10 +13,12 @@ from langfuse import get_client, Langfuse
 from langfuse.langchain import CallbackHandler
 
 from src.prompt_service import PromptService
+from src.semantic_coverage_service import SemanticCoverageService
 
 # Загружаем переменные из .env файла
 env_path = Path(__file__).parent.parent / ".env"
 load_dotenv(dotenv_path=env_path)
+
 
 class LLMService:
     def __init__(self,
@@ -62,6 +65,8 @@ class LLMService:
             host=langfuse_host or os.getenv("LANGFUSE_HOST"),
         )
 
+        self.semantic_coverage_service = SemanticCoverageService()
+
     def generate_response(self, question: str, context: str, state: dict) -> str:
         """
         Генерирует ответ на вопрос с учётом контекста.
@@ -91,15 +96,22 @@ class LLMService:
                 name="langchain-request-1",
                 trace_context={"trace_id": predefined_trace_id}
         ) as span:
-            span.update_trace(
-                user_id="user_123",
-                input={
-                    "document_ids": [doc.get("id") for doc in documents],
-                    "document_count": document_count,
-                    "relevance_scores": scores,
-                    "average_relevance": average_relevance
-                }
-            )
+            # Формируем input для логирования
+            input_data = {
+                "question": question,
+                "context": context,
+                "document_count": document_count,
+                "average_relevance": average_relevance,
+                "relevance_scores": scores
+            }
+
+            print("\n" + "="*60)
+            print("🟢 INPUT:")
+            print("="*60)
+            print(json.dumps(input_data, ensure_ascii=False, indent=4))
+            print("="*60)
+
+            span.update_trace(user_id="user_123", input=input_data)
 
             # Замер времени начала выполнения LLM-цепочки
             llm_start_time = time.time()
@@ -128,16 +140,23 @@ class LLMService:
             total_end_time = time.time()
             total_duration = total_end_time - start_time  # Общее время операции
 
-            span.update_trace(
-                output={
-                    "response": response,
-                    "llm_duration_seconds": llm_duration,  # Время работы LLM
-                    "total_duration_seconds": total_duration,
-                    "document_count": document_count,
-                    "relevance_scores": scores,
-                    "average_relevance": average_relevance  # Общее время
-                }
-            )
+            semantic_coverage = self.semantic_coverage_service.calculate(context, response, documents)
 
+            output = {
+                "response": response,
+                "llm_duration_seconds": llm_duration,  # Время работы LLM
+                "total_duration_seconds": total_duration,
+                "document_count": document_count,
+                "relevance_scores": scores,
+                "average_relevance": average_relevance,
+                "semantic_coverage": semantic_coverage
+            }
+
+            print("\n" + "🟩 OUTPUT:")
+            print("="*60)
+            print(json.dumps(output, ensure_ascii=False, indent=4))
+            print("="*60 + "\n")
+
+        span.update_trace(output=output, )
 
         return response
