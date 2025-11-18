@@ -46,11 +46,11 @@
 
 ```json
 {
-    "query": str,           # Текст запроса
-    "relevants": list,      # Найденные документы
-    "context": str,         # Объединённый текст документов
-    "response": str,        # Готовый ответ
-    "image_data": str,      # base64 изображения
+    "query": str,           // Текст запроса
+    "relevants": list,      // Найденные документы
+    "context": str,         // Объединённый текст документов
+    "response": str,        // Готовый ответ
+    "image_data": str,      // base64 изображения
     "prompt_template": PromptTemplate
 }
 ```
