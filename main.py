@@ -32,6 +32,7 @@ def handler(event, _):
                 "prompt_template": None,
             }
 
+            #собираем стэйт для картинки
             if message.message.content_type == 'photo':
                 file_id = message.message.photo[-1].file_id
                 file_info = bot.get_file(file_id)
@@ -46,6 +47,7 @@ def handler(event, _):
 
                 result = answer["response"]
 
+            # собираем стэйт для текста
             if message.message.content_type == 'text':
                 inputs["query"] = message.message.text
 
