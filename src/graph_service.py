@@ -56,7 +56,7 @@ def generate_node(state: GraphState) -> dict:
     print("🧠 Генерация ответа...")
 
     llm_service = LLMService(model="yandexgpt-lite", prompt_template=state["prompt_template"])
-    response = llm_service.generate_response(question=state["query"], context=state["context"]).strip()
+    response = llm_service.generate_response(question=state["query"], context=state["context"], state=state).strip()
 
     full_response = response
     if state["relevants"]:
@@ -64,6 +64,8 @@ def generate_node(state: GraphState) -> dict:
         for doc in state["relevants"]:
             full_response += f"• {doc['title']}\n"
             full_response += f"  {doc['url']}\n"
+
+    print("✅ Ответ получен")
 
     return {"response": full_response}
 

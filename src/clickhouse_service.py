@@ -74,7 +74,8 @@ class ClickHouseVectorStore:
                 "id": row[0],
                 "title": row[1],
                 "url": row[2],
-                "text": row[3]
+                "text": row[3],
+                "score": row[4]
             }
             for row in result.result_rows
         ]
